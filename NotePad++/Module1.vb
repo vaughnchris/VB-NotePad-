@@ -21,9 +21,8 @@ Structure FileData
     End Sub
 End Structure
 Module ModMain
-    Public DocumentData As FileData
     ''open a text file and return its contents
-    Function OpenFile() As Boolean
+    Function OpenFile(DocumentData As FileData) As Boolean
         Dim ofd As New OpenFileDialog
         Try
             ofd.Title = "Open Text File"
@@ -44,7 +43,7 @@ Module ModMain
         End Try
     End Function
     ''save a string to a text file
-    Function SaveFile() As Boolean
+    Function SaveFile(DocumentData As FileData) As Boolean
         Dim sfd As New SaveFileDialog
         Try
             ''if the file has not been saved before, prompt to save as
@@ -70,7 +69,7 @@ Module ModMain
         End Try
     End Function
     ''prompt to save as
-    Function SaveFileAs() As Boolean
+    Function SaveFileAs(DocumentData As FileData) As Boolean
         Dim sfd As New SaveFileDialog
         Try
             sfd.Title = "Save Text File As"
