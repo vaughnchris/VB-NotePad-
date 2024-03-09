@@ -121,5 +121,10 @@
     </None>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Paomedia-Small-N-Flat-Notepad.512.ico" />
+    <Content Include="Resources\NPIcon_512.png" />
+    <Content Include="Resources\Paomedia-Small-N-Flat-Notepad.svg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
