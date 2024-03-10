@@ -1,26 +1,47 @@
 ﻿Imports System.IO
 Imports Microsoft.VisualBasic.FileIO
-
-Structure FileData
-    Private _FileContents As String
-    Public Property FileName As String
-    Public Property FileContents As String
-        Get
-            Return _FileContents
-        End Get
-        Set
-            _FileContents = Value
-            DocumentChanged = True
-        End Set
-    End Property
-    Public Property DocumentChanged As Boolean
-    Sub New(ByVal FileName As String, ByVal FileContents As String)
-        Me.FileName = FileName
-        Me.FileContents = FileContents
-        Me.DocumentChanged = False
-    End Sub
-End Structure
 Module ModMain
+    Structure FileData
+        Private _FileContents As String
+        Public Property FileName As String
+        Public Property FileContents As String
+            Get
+                Return _FileContents
+            End Get
+            Set
+                _FileContents = Value
+                DocumentChanged = True
+            End Set
+        End Property
+        Public Property DocumentChanged As Boolean
+        Public ReadOnly Property IsNew As Boolean
+            Get
+                Return FileName = ""
+            End Get
+        End Property
+        Public ReadOnly Property WordCount As Integer
+            Get
+                Return FileContents.Split(" "c).Length - 1
+            End Get
+        End Property
+        Public ReadOnly Property SentanceCount As Integer
+            Get
+                SentanceCount = 0
+                For i As Integer = 0 To FileContents.Length - 1
+                    If FileContents(i) = "."c Or FileContents(i) = "!"c Or FileContents(i) = "?"c Then
+                        If FileContents(i + 1) = " "c Then
+                            SentanceCount += 1
+                        End If
+                    End If
+                Next
+            End Get
+        End Property
+        Sub New(ByVal FileName As String, ByVal FileContents As String)
+            Me.FileName = FileName
+            Me.FileContents = FileContents
+            Me.DocumentChanged = False
+        End Sub
+    End Structure
     ''open a text file and return its contents
     Function OpenFile(DocumentData As FileData) As Boolean
         Dim ofd As New OpenFileDialog

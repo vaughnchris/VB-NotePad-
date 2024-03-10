@@ -57,7 +57,6 @@ Partial Class MainForm
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.tssFontFace = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStripStatusLabel3 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.tssFontSize = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusLabel2 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.tssWordWrap = New System.Windows.Forms.ToolStripStatusLabel()
@@ -67,12 +66,18 @@ Partial Class MainForm
         Me.txtDoc = New System.Windows.Forms.TextBox()
         Me.PrintPreviewDialog1 = New System.Windows.Forms.PrintPreviewDialog()
         Me.PrintDialog1 = New System.Windows.Forms.PrintDialog()
+        Me.PrintDocument1 = New System.Drawing.Printing.PrintDocument()
+        Me.ToolStripStatusLabel3 = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.tssWordCount = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.ToolStripStatusLabel7 = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.tssSentanceCount = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.MenuStrip1.SuspendLayout()
+        Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'MenuStrip1
         '
         Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.EditToolStripMenuItem, Me.SettingsToolStripMenuItem, Me.HelpToolStripMenuItem})
-
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
         Me.MenuStrip1.Padding = New System.Windows.Forms.Padding(3, 1, 0, 1)
@@ -93,7 +98,7 @@ Partial Class MainForm
         Me.NewToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.NewToolStripMenuItem.Name = "NewToolStripMenuItem"
         Me.NewToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.N), System.Windows.Forms.Keys)
-        Me.NewToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.NewToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.NewToolStripMenuItem.Text = "&New"
         '
         'OpenToolStripMenuItem
@@ -102,13 +107,13 @@ Partial Class MainForm
         Me.OpenToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.OpenToolStripMenuItem.Name = "OpenToolStripMenuItem"
         Me.OpenToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
-        Me.OpenToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.OpenToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.OpenToolStripMenuItem.Text = "&Open"
         '
         'toolStripSeparator
         '
         Me.toolStripSeparator.Name = "toolStripSeparator"
-        Me.toolStripSeparator.Size = New System.Drawing.Size(143, 6)
+        Me.toolStripSeparator.Size = New System.Drawing.Size(177, 6)
         '
         'SaveToolStripMenuItem
         '
@@ -117,49 +122,47 @@ Partial Class MainForm
         Me.SaveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.SaveToolStripMenuItem.Name = "SaveToolStripMenuItem"
         Me.SaveToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
-        Me.SaveToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.SaveToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SaveToolStripMenuItem.Text = "&Save"
         '
         'SaveAsToolStripMenuItem
         '
         Me.SaveAsToolStripMenuItem.Enabled = False
         Me.SaveAsToolStripMenuItem.Name = "SaveAsToolStripMenuItem"
-        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SaveAsToolStripMenuItem.Text = "Save &As"
         '
         'toolStripSeparator1
         '
         Me.toolStripSeparator1.Name = "toolStripSeparator1"
-        Me.toolStripSeparator1.Size = New System.Drawing.Size(143, 6)
+        Me.toolStripSeparator1.Size = New System.Drawing.Size(177, 6)
         '
         'PrintToolStripMenuItem
         '
-        Me.PrintToolStripMenuItem.Enabled = False
         Me.PrintToolStripMenuItem.Image = CType(resources.GetObject("PrintToolStripMenuItem.Image"), System.Drawing.Image)
         Me.PrintToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.PrintToolStripMenuItem.Name = "PrintToolStripMenuItem"
         Me.PrintToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.P), System.Windows.Forms.Keys)
-        Me.PrintToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.PrintToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.PrintToolStripMenuItem.Text = "&Print"
         '
         'PrintPreviewToolStripMenuItem
         '
-        Me.PrintPreviewToolStripMenuItem.Enabled = False
         Me.PrintPreviewToolStripMenuItem.Image = CType(resources.GetObject("PrintPreviewToolStripMenuItem.Image"), System.Drawing.Image)
         Me.PrintPreviewToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.PrintPreviewToolStripMenuItem.Name = "PrintPreviewToolStripMenuItem"
-        Me.PrintPreviewToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.PrintPreviewToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.PrintPreviewToolStripMenuItem.Text = "Print Pre&view"
         '
         'toolStripSeparator2
         '
         Me.toolStripSeparator2.Name = "toolStripSeparator2"
-        Me.toolStripSeparator2.Size = New System.Drawing.Size(143, 6)
+        Me.toolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         '
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.ExitToolStripMenuItem.Text = "E&xit"
         '
         'EditToolStripMenuItem
@@ -267,46 +270,49 @@ Partial Class MainForm
         '
         'ContentsToolStripMenuItem
         '
+        Me.ContentsToolStripMenuItem.Enabled = False
         Me.ContentsToolStripMenuItem.Name = "ContentsToolStripMenuItem"
-        Me.ContentsToolStripMenuItem.Size = New System.Drawing.Size(122, 22)
+        Me.ContentsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.ContentsToolStripMenuItem.Text = "&Contents"
         '
         'IndexToolStripMenuItem
         '
+        Me.IndexToolStripMenuItem.Enabled = False
         Me.IndexToolStripMenuItem.Name = "IndexToolStripMenuItem"
-        Me.IndexToolStripMenuItem.Size = New System.Drawing.Size(122, 22)
+        Me.IndexToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.IndexToolStripMenuItem.Text = "&Index"
         '
         'SearchToolStripMenuItem
         '
+        Me.SearchToolStripMenuItem.Enabled = False
         Me.SearchToolStripMenuItem.Name = "SearchToolStripMenuItem"
-        Me.SearchToolStripMenuItem.Size = New System.Drawing.Size(122, 22)
+        Me.SearchToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SearchToolStripMenuItem.Text = "&Search"
         '
         'toolStripSeparator5
         '
         Me.toolStripSeparator5.Name = "toolStripSeparator5"
-        Me.toolStripSeparator5.Size = New System.Drawing.Size(119, 6)
+        Me.toolStripSeparator5.Size = New System.Drawing.Size(177, 6)
         '
         'AboutToolStripMenuItem
         '
         Me.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
-        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(122, 22)
+        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.AboutToolStripMenuItem.Text = "&About..."
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1, Me.tssFontFace, Me.ToolStripStatusLabel3, Me.tssFontSize, Me.ToolStripStatusLabel2, Me.tssWordWrap})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 428)
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1, Me.tssFontFace, Me.tssFontSize, Me.ToolStripStatusLabel2, Me.tssWordWrap, Me.ToolStripStatusLabel3, Me.tssWordCount, Me.ToolStripStatusLabel7, Me.tssSentanceCount})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 423)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(750, 22)
+        Me.StatusStrip1.Size = New System.Drawing.Size(750, 27)
         Me.StatusStrip1.TabIndex = 1
         Me.StatusStrip1.Text = "StatusStrip1"
         '
         'ToolStripStatusLabel1
         '
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(34, 32)
+        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(34, 22)
         Me.ToolStripStatusLabel1.Text = "Font:"
         '
         'tssFontFace
@@ -315,31 +321,29 @@ Partial Class MainForm
         Me.tssFontFace.BorderSides = CType((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) _
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) _
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
+        Me.tssFontFace.IsLink = True
+        Me.tssFontFace.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline
         Me.tssFontFace.Name = "tssFontFace"
-        Me.tssFontFace.Size = New System.Drawing.Size(150, 32)
+        Me.tssFontFace.Size = New System.Drawing.Size(150, 22)
         Me.tssFontFace.Text = "Fn: LBS"
         Me.tssFontFace.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ToolStripStatusLabel3
-        '
-        Me.ToolStripStatusLabel3.Name = "ToolStripStatusLabel3"
-        Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(30, 32)
-        Me.ToolStripStatusLabel3.Text = "Size:"
+        Me.tssFontFace.ToolTipText = "Select Font"
         '
         'tssFontSize
         '
         Me.tssFontSize.AutoSize = False
-        Me.tssFontSize.BorderSides = CType((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) _
-            Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) _
+        Me.tssFontSize.BorderSides = CType(((System.Windows.Forms.ToolStripStatusLabelBorderSides.Top Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) _
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
+        Me.tssFontSize.Margin = New System.Windows.Forms.Padding(-3, 3, 0, 2)
         Me.tssFontSize.Name = "tssFontSize"
-        Me.tssFontSize.Size = New System.Drawing.Size(65, 32)
+        Me.tssFontSize.Size = New System.Drawing.Size(65, 22)
+        Me.tssFontSize.ToolTipText = "Font Size"
         '
         'ToolStripStatusLabel2
         '
         Me.ToolStripStatusLabel2.Margin = New System.Windows.Forms.Padding(50, 3, 0, 2)
         Me.ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
-        Me.ToolStripStatusLabel2.Size = New System.Drawing.Size(70, 32)
+        Me.ToolStripStatusLabel2.Size = New System.Drawing.Size(70, 22)
         Me.ToolStripStatusLabel2.Text = "Word Wrap:"
         '
         'tssWordWrap
@@ -349,7 +353,7 @@ Partial Class MainForm
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) _
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
         Me.tssWordWrap.Name = "tssWordWrap"
-        Me.tssWordWrap.Size = New System.Drawing.Size(45, 32)
+        Me.tssWordWrap.Size = New System.Drawing.Size(45, 22)
         '
         'ToolStripStatusLabel4
         '
@@ -381,7 +385,7 @@ Partial Class MainForm
         Me.txtDoc.Multiline = True
         Me.txtDoc.Name = "txtDoc"
         Me.txtDoc.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.txtDoc.Size = New System.Drawing.Size(750, 404)
+        Me.txtDoc.Size = New System.Drawing.Size(750, 399)
         Me.txtDoc.TabIndex = 2
         '
         'PrintPreviewDialog1
@@ -398,6 +402,42 @@ Partial Class MainForm
         '
         Me.PrintDialog1.UseEXDialog = True
         '
+        'PrintDocument1
+        '
+        '
+        'ToolStripStatusLabel3
+        '
+        Me.ToolStripStatusLabel3.Name = "ToolStripStatusLabel3"
+        Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(106, 22)
+        Me.ToolStripStatusLabel3.Spring = True
+        Me.ToolStripStatusLabel3.Text = "Word Count:"
+        Me.ToolStripStatusLabel3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'tssWordCount
+        '
+        Me.tssWordCount.AutoSize = False
+        Me.tssWordCount.BorderSides = CType((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) _
+            Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) _
+            Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
+        Me.tssWordCount.Name = "tssWordCount"
+        Me.tssWordCount.Size = New System.Drawing.Size(55, 22)
+        '
+        'ToolStripStatusLabel7
+        '
+        Me.ToolStripStatusLabel7.Margin = New System.Windows.Forms.Padding(14, 3, 0, 2)
+        Me.ToolStripStatusLabel7.Name = "ToolStripStatusLabel7"
+        Me.ToolStripStatusLabel7.Size = New System.Drawing.Size(63, 22)
+        Me.ToolStripStatusLabel7.Text = "Sentances:"
+        '
+        'tssSentanceCount
+        '
+        Me.tssSentanceCount.AutoSize = False
+        Me.tssSentanceCount.BorderSides = CType((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) _
+            Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) _
+            Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
+        Me.tssSentanceCount.Name = "tssSentanceCount"
+        Me.tssSentanceCount.Size = New System.Drawing.Size(55, 22)
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -409,6 +449,10 @@ Partial Class MainForm
         Me.MainMenuStrip = Me.MenuStrip1
         Me.Name = "MainForm"
         Me.Text = "My Notepad++"
+        Me.MenuStrip1.ResumeLayout(False)
+        Me.MenuStrip1.PerformLayout()
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -447,7 +491,6 @@ Partial Class MainForm
     Friend WithEvents txtDoc As TextBox
     Friend WithEvents SettingsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents FontFaceToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ToolStripStatusLabel3 As ToolStripStatusLabel
     Friend WithEvents tssFontSize As ToolStripStatusLabel
     Friend WithEvents AutoWrapTextToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripStatusLabel2 As ToolStripStatusLabel
@@ -458,4 +501,9 @@ Partial Class MainForm
     Friend WithEvents ToolStripStatusLabel6 As ToolStripStatusLabel
     Friend WithEvents PrintPreviewDialog1 As PrintPreviewDialog
     Friend WithEvents PrintDialog1 As PrintDialog
+    Friend WithEvents PrintDocument1 As Printing.PrintDocument
+    Friend WithEvents ToolStripStatusLabel3 As ToolStripStatusLabel
+    Friend WithEvents tssWordCount As ToolStripStatusLabel
+    Friend WithEvents ToolStripStatusLabel7 As ToolStripStatusLabel
+    Friend WithEvents tssSentanceCount As ToolStripStatusLabel
 End Class

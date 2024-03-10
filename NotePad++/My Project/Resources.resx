@@ -121,6 +121,12 @@
   <data name="AppIcon_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Paomedia-Small-N-Flat-Notepad.512.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="InitialFontFace" xml:space="preserve">
+    <value>Arial</value>
+  </data>
+  <data name="InitialFontSize" xml:space="preserve">
+    <value>10</value>
+  </data>
   <data name="MainFormTitle" xml:space="preserve">
     <value>My Notepad++</value>
   </data>
@@ -129,5 +135,8 @@
   </data>
   <data name="ProgramAuthor" xml:space="preserve">
     <value>Christopher Vaughn</value>
+  </data>
+  <data name="ProgramDescription" xml:space="preserve">
+    <value>This program is a simple text editor. It is a demonstration of how to use the OpenFileDialog and SaveFileDialog controls to open and save text files. It also demonstrates how to use the common textbox control to display and edit text files.</value>
   </data>
 </root>

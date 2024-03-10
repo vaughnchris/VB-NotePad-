@@ -71,6 +71,24 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to Arial.
+        '''</summary>
+        Friend ReadOnly Property InitialFontFace() As String
+            Get
+                Return ResourceManager.GetString("InitialFontFace", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to 10.
+        '''</summary>
+        Friend ReadOnly Property InitialFontSize() As String
+            Get
+                Return ResourceManager.GetString("InitialFontSize", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to My Notepad++.
         '''</summary>
         Friend ReadOnly Property MainFormTitle() As String
@@ -95,6 +113,15 @@ Namespace My.Resources
         Friend ReadOnly Property ProgramAuthor() As String
             Get
                 Return ResourceManager.GetString("ProgramAuthor", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to This program is a simple text editor. It is a demonstration of how to use the OpenFileDialog and SaveFileDialog controls to open and save text files. It also demonstrates how to use the common textbox control to display and edit text files..
+        '''</summary>
+        Friend ReadOnly Property ProgramDescription() As String
+            Get
+                Return ResourceManager.GetString("ProgramDescription", resourceCulture)
             End Get
         End Property
     End Module
