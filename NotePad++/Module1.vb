@@ -1,6 +1,14 @@
 ﻿Imports System.IO
 Imports Microsoft.VisualBasic.FileIO
+''' <summary>
+''' This module contains code shared by all forms in the application.
+''' </summary>
+''' <remarks>Aulthor: Christopher Vaughn</remarks>
 Module ModMain
+#Region "Type Definitions"
+    ''' <summary>
+    ''' A structure to hold the data for a single file.
+    ''' </summary>
     Structure FileData
         Private _FileContents As String
         Public Property FileName As String
@@ -42,14 +50,22 @@ Module ModMain
             Me.DocumentChanged = False
         End Sub
     End Structure
-    ''open a text file and return its contents
-    Function OpenFile(DocumentData As FileData) As Boolean
+#End Region
+#Region "Global Variables"
+
+#End Region
+#Region "File Operations"
+    ''' <summary>
+    ''' Opens a file and places its data into the FileData struct.
+    ''' </summary>
+    ''' <param name="DocumentData"></param>
+    ''' <returns>True if a file was opened and False if not</returns>
+    Function OpenFile(ByRef DocumentData As FileData) As Boolean
         Dim ofd As New OpenFileDialog
         Try
             ofd.Title = "Open Text File"
             ofd.InitialDirectory = SpecialDirectories.MyDocuments
-            ofd.Filter = "Text Files|*.txt"
-            ofd.Filter = "All Files|*.*"
+            ofd.Filter = "Text Files (*.txt)|*.txt | All Files (*.*)|*.*"
 
             If ofd.ShowDialog = DialogResult.OK Then
                 DocumentData.FileName = ofd.FileName
@@ -63,15 +79,20 @@ Module ModMain
             MessageBox.Show(ex.Message)
         End Try
     End Function
-    ''save a string to a text file
-    Function SaveFile(DocumentData As FileData) As Boolean
+    ''' <summary>
+    ''' Saves a file. If the file has not been saved before, 
+    ''' it will prompt the user to save as.
+    ''' </summary>
+    ''' <param name="DocumentData"></param>
+    ''' <returns></returns>
+    Function SaveFile(ByRef DocumentData As FileData) As Boolean
         Dim sfd As New SaveFileDialog
         Try
             ''if the file has not been saved before, prompt to save as
             If DocumentData.FileName = "" Then
                 sfd.Title = "Save As New Document"
                 sfd.InitialDirectory = SpecialDirectories.MyDocuments
-                sfd.Filter = "Text Files|*.txt"
+                sfd.Filter = "Text Files (*.txt)|*.txt | All Files (*.*)|*.*"
                 ''if the user cancels, return false
                 If sfd.ShowDialog = DialogResult.OK Then
                     File.WriteAllText(sfd.FileName, DocumentData.FileContents)
@@ -95,7 +116,7 @@ Module ModMain
         Try
             sfd.Title = "Save Text File As"
             sfd.InitialDirectory = SpecialDirectories.MyDocuments
-            sfd.Filter = "Text Files|*.txt"
+            sfd.Filter = "Text Files (*.txt)|*.txt | All Files (*.*)|*.*"
             If sfd.ShowDialog = DialogResult.OK Then
                 File.WriteAllText(sfd.FileName, DocumentData.FileContents)
                 DocumentData.FileName = sfd.FileName
@@ -108,4 +129,5 @@ Module ModMain
             MessageBox.Show(ex.Message)
         End Try
     End Function
+#End Region
 End Module

@@ -1,4 +1,5 @@
 ﻿Imports System.Drawing.Printing
+Imports System.IO
 
 Public Class MainForm
     Private _DocumentData As FileData = New FileData("", "")
@@ -41,7 +42,7 @@ Public Class MainForm
     ''' <param name="e"></param>
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'set the form title 
-        Me.Text = My.Resources.MainFormTitle & " - New File"
+        Me.Text = My.Resources.MainFormTitle & " - Unsaved File"
         txtDoc.Font = New Font(My.Resources.InitialFontFace,
                 CInt(My.Resources.InitialFontSize))
         txtDoc_FontChanged(txtDoc, Nothing)
@@ -57,7 +58,7 @@ Public Class MainForm
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
-    Private Sub txtDoc_TextChanged(sender As Object, e As EventArgs) Handles txtDoc.TextChanged
+    Private Sub txtDoc_TextChanged(sender As Object, e As EventArgs)
         Dim data As FileData = Me.DocumentData
         data.FileContents = txtDoc.Text
         data.DocumentChanged = True
@@ -73,10 +74,11 @@ Public Class MainForm
             DocumentData.FileContents(DocumentData.FileContents.Length - 1) = " "c Then
             tssWordCount.Text = DocumentData.WordCount.ToString
         End If
-        Me.Text = My.Resources.MainFormTitle & " - " & DocumentData.FileName & "*"
+        Dim strDocumentTitle As String = If(DocumentData.FileName = "", "Unsaved File", DocumentData.FileName)
+        Me.Text = My.Resources.MainFormTitle & " - " & strDocumentTitle & "*"
     End Sub
 
-    Private Sub txtDoc_MouseWheel(sender As Object, e As MouseEventArgs) Handles txtDoc.MouseWheel
+    Private Sub txtDoc_MouseWheel(sender As Object, e As MouseEventArgs)
         If e.Delta > 0 AndAlso
             txtDoc.Font.Size + 1 < System.Single.MaxValue Then
             txtDoc.Font = New Font(txtDoc.Font.FontFamily, txtDoc.Font.Size + 1)
@@ -87,57 +89,11 @@ Public Class MainForm
             End If
         End If
     End Sub
-    Private Sub txtDoc_FontChanged(sender As Object, e As EventArgs) Handles txtDoc.FontChanged
+    Private Sub txtDoc_FontChanged(sender As Object, e As EventArgs)
         tssFontFace.Text = txtDoc.Font.FontFamily.Name
         tssFontSize.Text = txtDoc.Font.Size.ToString & "pt"
     End Sub
 
-#End Region
-#Region "File Operations"
-    Private Function OpenFile(data As FileData) As Boolean
-        Dim dlgOpen As New OpenFileDialog
-        With dlgOpen
-            .Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*"
-            .FilterIndex = 1
-            .InitialDirectory = My.Computer.FileSystem.SpecialDirectories.MyDocuments
-            .Title = "Open File"
-        End With
-        If dlgOpen.ShowDialog = DialogResult.OK Then
-            data.FileName = dlgOpen.FileName
-            data.FileContents = My.Computer.FileSystem.ReadAllText(data.FileName)
-            data.DocumentChanged = False
-            Me.DocumentData = data
-            Return True
-        End If
-        Return False
-    End Function
-    Private Function SaveFile(data As FileData) As Boolean
-        If data.FileName = "" Then
-            Return SaveFileAs(data)
-        Else
-            My.Computer.FileSystem.WriteAllText(data.FileName, data.FileContents, False)
-            data.DocumentChanged = False
-            Me.DocumentData = data
-            Return True
-        End If
-    End Function
-    Private Function SaveFileAs(data As FileData) As Boolean
-        Dim dlgSave As New SaveFileDialog
-        With dlgSave
-            .Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*"
-            .FilterIndex = 1
-            .InitialDirectory = My.Computer.FileSystem.SpecialDirectories.MyDocuments
-            .Title = "Save File As"
-        End With
-        If dlgSave.ShowDialog = DialogResult.OK Then
-            data.FileName = dlgSave.FileName
-            My.Computer.FileSystem.WriteAllText(data.FileName, data.FileContents, False)
-            data.DocumentChanged = False
-            Me.DocumentData = data
-            Return True
-        End If
-        Return False
-    End Function
 #End Region
 #Region "Menu Events"
 #Region "File Menu"
@@ -146,26 +102,47 @@ Public Class MainForm
         ''first check to see if there is an open file to save
         If DocumentData.DocumentChanged Then
             If TrySave(DocumentData) Then
-                ''celar the document data and the text box
+                ''clear the document data and the text box
                 ClearData()
             End If
         End If
     End Sub
     Private Sub OpenToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenToolStripMenuItem.Click
         If DocumentData.DocumentChanged Then
-            If (TrySave(DocumentData)) Then
+            If TrySave(DocumentData) Then
                 If OpenFile(DocumentData) Then
-                    Me.Text = My.Resources.MainFormTitle & " - " &
-                        DocumentData.FileName
-                    Me.txtDoc.Text = DocumentData.FileContents
+                    UpdateRecentFiles(DocumentData.FileName)
+                    UpdateFormTitleAndContent(DocumentData)
+                    UpdateStatistics(DocumentData)
                 End If
             End If
+        Else
+            OpenFile(DocumentData)
+            UpdateFormTitleAndContent(DocumentData)
         End If
-        If OpenFile(DocumentData) Then
-            Me.Text = My.Resources.MainFormTitle & " - " &
-                DocumentData.FileName
-            Me.txtDoc.Text = DocumentData.FileContents
+    End Sub
+
+    Private Sub UpdateRecentFiles(fileName As String)
+        If My.Settings.RecentFiles Is Nothing Then
+            My.Settings.RecentFiles = New Specialized.StringCollection
         End If
+        If My.Settings.RecentFiles.Count >= 10 Then
+            My.Settings.RecentFiles.RemoveAt(0)
+        End If
+        My.Settings.RecentFiles.Add(fileName)
+        My.Settings.Save()
+        My.Settings.Reload()
+    End Sub
+
+    Private Sub UpdateFormTitleAndContent(data As FileData)
+        Dim strDocumentTitle As String = If(data.FileName = "", "Unsaved File", data.FileName)
+        Me.Text = $"{My.Resources.MainFormTitle} - {strDocumentTitle}"
+        Me.txtDoc.Text = data.FileContents
+    End Sub
+
+    Private Sub UpdateStatistics(data As FileData)
+        Me.tssWordCount.Text = data.WordCount.ToString()
+        Me.tssSentanceCount.Text = data.SentanceCount.ToString()
     End Sub
     Private Sub SaveToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SaveToolStripMenuItem.Click
         If SaveFile(DocumentData) Then
@@ -192,6 +169,19 @@ Public Class MainForm
             PrintPreviewToolStripMenuItem.Enabled = False
         Else
             PrintPreviewToolStripMenuItem.Enabled = True
+        End If
+        If My.Settings.RecentFiles Is Nothing OrElse My.Settings.RecentFiles.Count = 0 Then
+            OpenRecentToolStripMenuItem.Enabled = False
+        Else
+            OpenRecentToolStripMenuItem.Enabled = True
+            OpenRecentToolStripMenuItem.DropDownItems.Clear()
+            For Each file As String In My.Settings.RecentFiles
+                Dim item As New ToolStripMenuItem
+                item.Text = file.Substring(file.LastIndexOf("\") + 1)
+                item.Tag = file
+                AddHandler item.Click, AddressOf OpenRecentFile
+                OpenRecentToolStripMenuItem.DropDownItems.Add(item)
+            Next
         End If
     End Sub
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
@@ -244,13 +234,10 @@ Public Class MainForm
 #End Region
 #End Region
 #Region "User Methods"
-    'Private Sub UpdateStatistics()
-    '    tssWordCount.Text = DocumentData.WordCount.ToString
-    '    tssSentanceCount.Text = DocumentData.SentanceCount.ToString
-    'End Sub
     Private Sub RefreshState()
         txtDoc.Text = DocumentData.FileContents
-        Me.Text = My.Resources.MainFormTitle & " - " & DocumentData.FileName
+        Dim strDocumentTitle As String = If(DocumentData.FileName = "", "Unsaved File", DocumentData.FileName)
+        Me.Text = $"{My.Resources.MainFormTitle} - {strDocumentTitle}"
     End Sub
     Private Sub ClearData()
         Dim data As FileData = Me.DocumentData
@@ -274,19 +261,44 @@ Public Class MainForm
         End If
         Return True
     End Function
-
-    Private Sub tssFontFace_Click(sender As Object, e As EventArgs) Handles tssFontFace.Click
-
-    End Sub
-
     Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
         Dim frmAbout As New AboutForm
         frmAbout.ShowDialog()
 
     End Sub
+    Private Sub OpenRecentFile(sender As Object, e As EventArgs)
+        Dim item As ToolStripMenuItem = CType(sender, ToolStripMenuItem)
+        If File.Exists(item.Tag.ToString) Then
+            Dim data As New FileData("", "")
+            data.FileName = item.Tag.ToString
+            data.FileContents = File.ReadAllText(data.FileName)
+            data.DocumentChanged = False
+            Me.DocumentData = data
+            UpdateFormTitleAndContent(DocumentData)
+            UpdateStatistics(DocumentData)
+        End If
 
+    End Sub
 
+    Private Sub tsbFindNext_Click(sender As Object, e As EventArgs) Handles tsbFindNext.Click
+        Static intStart As Integer = 0
+        Dim intFound As Integer
+        If tstFind.TextBox.Text = "" OrElse
+            intStart >= tstFind.TextBox.Text.Length Then
+            Exit Sub
+        Else
 
+            intFound = txtDoc.Text.IndexOf(tstFind.TextBox.Text, intStart)
+            If intFound = -1 Then
+                MessageBox.Show("No more occurances found")
+                intStart = 0
+            Else
+                txtDoc.Select(intFound, tstFind.TextBox.Text.Length)
+                intStart = intFound + tstFind.TextBox.Text.Length
+            End If
+        End If
+
+    End Sub
 
 #End Region
 End Class
