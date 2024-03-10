@@ -122,6 +122,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="MyStatus.Designer.vb">
+      <DependentUpon>MyStatus.vb</DependentUpon>
+    </Compile>
+    <Compile Include="MyStatus.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TabPage.vb">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutForm.resx">
@@ -135,6 +144,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MyStatus.resx">
+      <DependentUpon>MyStatus.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

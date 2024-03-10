@@ -9,9 +9,18 @@ Module ModMain
     ''' <summary>
     ''' A structure to hold the data for a single file.
     ''' </summary>
-    Structure FileData
+    Public Structure FileData
         Private _FileContents As String
+        Private _FileName As String
         Public Property FileName As String
+            Get
+                Return _FileName
+            End Get
+            Set
+                _FileName = Value
+            End Set
+        End Property
+
         Public Property FileContents As String
             Get
                 Return _FileContents
@@ -60,7 +69,7 @@ Module ModMain
     ''' </summary>
     ''' <param name="DocumentData"></param>
     ''' <returns>True if a file was opened and False if not</returns>
-    Function OpenFile(ByRef DocumentData As FileData) As Boolean
+    Function OpenFile(ByRef tab As TabPageTemplate) As Boolean
         Dim ofd As New OpenFileDialog
         Try
             ofd.Title = "Open Text File"
@@ -68,9 +77,10 @@ Module ModMain
             ofd.Filter = "Text Files (*.txt)|*.txt | All Files (*.*)|*.*"
 
             If ofd.ShowDialog = DialogResult.OK Then
-                DocumentData.FileName = ofd.FileName
-                DocumentData.FileContents = File.ReadAllText(ofd.FileName)
-                DocumentData.DocumentChanged = False
+                tab.FileName = ofd.FileName
+                tab.FileContents = File.ReadAllText(ofd.FileName)
+                tab.Text = tab.FileName.Substring(tab.FileName.LastIndexOf("\") + 1)
+                tab.DocumentChanged = False
                 Return True
             Else
                 Return False
@@ -85,42 +95,47 @@ Module ModMain
     ''' </summary>
     ''' <param name="DocumentData"></param>
     ''' <returns></returns>
-    Function SaveFile(ByRef DocumentData As FileData) As Boolean
+    Function SaveFile(ByRef tab As TabPageTemplate) As Boolean
         Dim sfd As New SaveFileDialog
         Try
             ''if the file has not been saved before, prompt to save as
-            If DocumentData.FileName = "" Then
+            If tab.FileName = TabPageTemplate.UNSAVED_FILE Then
                 sfd.Title = "Save As New Document"
                 sfd.InitialDirectory = SpecialDirectories.MyDocuments
                 sfd.Filter = "Text Files (*.txt)|*.txt | All Files (*.*)|*.*"
+                sfd.FilterIndex = 0
                 ''if the user cancels, return false
                 If sfd.ShowDialog = DialogResult.OK Then
-                    File.WriteAllText(sfd.FileName, DocumentData.FileContents)
-                    DocumentData.FileName = sfd.FileName
-                    DocumentData.DocumentChanged = False
+                    File.WriteAllText(sfd.FileName, tab.FileContents)
+                    tab.FileName = sfd.FileName
+                    tab.Text = tab.FileName.Substring(tab.FileName.LastIndexOf("\") + 1)
+                    tab.DocumentChanged = False
                     Return True
                 Else
                     Return False
                 End If
             End If
             ''if the file has been saved before, save it
-            File.WriteAllText(DocumentData.FileName, DocumentData.FileContents)
+            File.WriteAllText(tab.FileName, tab.FileContents)
+            tab.DocumentChanged = False
             Return True
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
     End Function
     ''prompt to save as
-    Function SaveFileAs(DocumentData As FileData) As Boolean
+    Function SaveFileAs(ByRef tab As TabPageTemplate) As Boolean
         Dim sfd As New SaveFileDialog
         Try
             sfd.Title = "Save Text File As"
             sfd.InitialDirectory = SpecialDirectories.MyDocuments
             sfd.Filter = "Text Files (*.txt)|*.txt | All Files (*.*)|*.*"
+            sfd.FilterIndex = 0
             If sfd.ShowDialog = DialogResult.OK Then
-                File.WriteAllText(sfd.FileName, DocumentData.FileContents)
-                DocumentData.FileName = sfd.FileName
-                DocumentData.DocumentChanged = False
+                File.WriteAllText(sfd.FileName, tab.FileContents)
+                tab.FileName = sfd.FileName
+                tab.Text = tab.FileName.Substring(tab.FileName.LastIndexOf("\") + 1)
+                tab.DocumentChanged = False
                 Return True
             Else
                 Return False
