@@ -4,6 +4,7 @@ Imports System.IO
 Public Class MainForm
     Private Property CurrentTab As TabPageTemplate
 #Region "Form Control Events"
+
     ''' <summary>
     ''' Sets the new tabs autowrap property to synch with the menu item 
     ''' and sets the current tab to the new tab and set focus to the new tab's text box.
@@ -16,14 +17,13 @@ Public Class MainForm
     Private Sub DocumentTabs_ControlAdded(sender As Object, e As ControlEventArgs) Handles DocumentTabs.ControlAdded
         ''set the current tab to the added tab
         Dim tab As TabPageTemplate = CType(e.Control, TabPageTemplate)
-        ''set the current tab to the added tab
+        Me.CurrentTab = tab
         AutoWrapTextToolStripMenuItem_Click(tab, Nothing)
+        Me.Text = $"{My.Resources.MainFormTitle} - {CurrentTab.FileName}"
         ''set the current tab to the added tab
         DocumentTabs.SelectedTab = tab
         tab.DocumentTextBox.Focus()
-        If DocumentTabs.TabPages.Count = 1 Then
-            DocumentTabs_SelectedIndexChanged(DocumentTabs, Nothing)
-        End If
+
     End Sub
     ''' <summary>
     ''' Updates the title bar of the form to reflect the current tab's file name 
@@ -34,6 +34,7 @@ Public Class MainForm
     Private Sub DocumentTabs_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DocumentTabs.SelectedIndexChanged
         ''set the current tab to the selected tab
         Me.CurrentTab = CType(DocumentTabs.SelectedTab, TabPageTemplate)
+        Me.Text = $"{My.Resources.MainFormTitle} - {CurrentTab.FileName}"
     End Sub
 #End Region
 #Region "Form Menu Events"
@@ -54,7 +55,7 @@ Public Class MainForm
                 SaveToolStripMenuItem.Enabled = False
             End If
             ''if the file has a file name, enable the save as menu item
-            If Me.CurrentTab.FileName = TabPageTemplate.UNSAVED_FILE Then
+            If Me.CurrentTab.FileName = UnsavedFileText Then
                 SaveAsToolStripMenuItem.Enabled = False
             Else
                 SaveAsToolStripMenuItem.Enabled = True
@@ -282,6 +283,44 @@ Public Class MainForm
 #End Region
 #End Region
 #Region "Edit Menu Events"
+    Private Sub EditToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles EditToolStripMenuItem.DropDownOpening
+        If CurrentTab IsNot Nothing Then
+            UndoToolStripMenuItem.Enabled = CurrentTab.DocumentTextBox.CanUndo
+
+            If CurrentTab.DocumentTextBox.SelectionLength > 0 Then
+                CutToolStripMenuItem.Enabled = True
+                CopyToolStripMenuItem.Enabled = True
+            Else
+                CutToolStripMenuItem.Enabled = False
+                CopyToolStripMenuItem.Enabled = False
+            End If
+            If Clipboard.ContainsText Then
+                PasteToolStripMenuItem.Enabled = True
+            Else
+                PasteToolStripMenuItem.Enabled = False
+            End If
+            Me.DuplicateWindowToolStripMenuItem.Enabled = True
+        Else
+            UndoToolStripMenuItem.Enabled = False
+            RedoToolStripMenuItem.Enabled = False
+            CutToolStripMenuItem.Enabled = False
+            CopyToolStripMenuItem.Enabled = False
+            PasteToolStripMenuItem.Enabled = False
+            SelectAllToolStripMenuItem.Enabled = False
+            DuplicateWindowToolStripMenuItem.Enabled = False
+        End If
+
+    End Sub
+    Private Sub UndoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles UndoToolStripMenuItem.Click
+        If CurrentTab.DocumentTextBox.CanUndo Then
+            CurrentTab.DocumentTextBox.Undo()
+        End If
+    End Sub
+
+    Private Sub RedoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RedoToolStripMenuItem.Click
+
+    End Sub
+
     ''' <summary>
     ''' Copy the selected text to the clipboard from 
     ''' the current tab's text box.
@@ -317,6 +356,10 @@ Public Class MainForm
     ''' </summary>
     ''' <param name="sender">The Selected MenuItem</param>
     ''' <param name="e">Event Args</param>
+    Private Sub SelectAllToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SelectAllToolStripMenuItem.Click
+        ''copy everything from the textbox to the clipboard
+        CurrentTab.DocumentTextBox.SelectAll()
+    End Sub
     Private Sub DuplicateWindowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DuplicateWindowToolStripMenuItem.Click
         ''create a new tab from the current tab using the copy constructor and add it to the tab control
         Dim tabCopy As New TabPageTemplate(Me.CurrentTab)
@@ -334,9 +377,12 @@ Public Class MainForm
             ''toggle the word wrap property of the current tab's text box
             CurrentTab.DocumentTextBox.WordWrap = AutoWrapTextToolStripMenuItem.Checked
             ''toggle the scroll bars
+            Me.SuspendLayout()
             CurrentTab.DocumentTextBox.ScrollBars = If(CurrentTab.DocumentTextBox.WordWrap, ScrollBars.None, ScrollBars.Vertical)
             ''update the status bar
             CurrentTab.StatusBar.tssWordWrap.Text = If(CurrentTab.DocumentTextBox.WordWrap, "On", "Off")
+            Me.ResumeLayout()
+
         End If
     End Sub
 #End Region
@@ -347,9 +393,19 @@ Public Class MainForm
 
     End Sub
 
-    Private Sub SelectAllToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SelectAllToolStripMenuItem.Click
-        ''copy everything from the textbox to the clipboard
-        CurrentTab.DocumentTextBox.SelectAll()
+    Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Dim SplashForm As New Splash
+        SplashForm.ShowDialog()
+    End Sub
+
+    Private Sub FontFaceToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FontFaceToolStripMenuItem.Click
+        If CurrentTab IsNot Nothing Then
+            Dim dlgFont As New FontDialog
+            dlgFont.Font = CurrentTab.DocumentTextBox.Font
+            If dlgFont.ShowDialog() = DialogResult.OK Then
+                CurrentTab.DocumentTextBox.Font = dlgFont.Font
+            End If
+        End If
     End Sub
 #End Region
 #End Region

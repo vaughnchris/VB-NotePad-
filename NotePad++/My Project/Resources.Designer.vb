@@ -124,5 +124,14 @@ Namespace My.Resources
                 Return ResourceManager.GetString("ProgramDescription", resourceCulture)
             End Get
         End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to Unsaved File.
+        '''</summary>
+        Friend ReadOnly Property UnsavedFileText() As String
+            Get
+                Return ResourceManager.GetString("UnsavedFileText", resourceCulture)
+            End Get
+        End Property
     End Module
 End Namespace

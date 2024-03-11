@@ -12,11 +12,10 @@ Public Class TabPageTemplate : Inherits TabPage
     ''' <summary>
     ''' Constant for the name of an unsaved file.
     ''' </summary>
-    Public Const UNSAVED_FILE As String = "Unsaved File"
     ''' <summary>
     ''' A structure to hold the data for the file associated with this tab.
     ''' </summary>
-    Private _Data As New FileData(UNSAVED_FILE, "")
+    Private _Data As New FileData(UnsavedFileText, "")
     ''' <summary>
     ''' The text box to display and interreact with the file contents.
     ''' </summary>
@@ -36,7 +35,7 @@ Public Class TabPageTemplate : Inherits TabPage
         End Get
         Set
             _Data.FileName = Value
-            If FileName = UNSAVED_FILE Then
+            If FileName = UnsavedFileText Then
                 Me.Text = FileName
             Else
                 Me.Text = FileName.Substring(Value.LastIndexOf("\") + 1)
@@ -53,7 +52,14 @@ Public Class TabPageTemplate : Inherits TabPage
             Return _Data.FileContents
         End Get
         Set
+            Static firstLoad As Boolean = True
             _Data.FileContents = Value
+            If firstLoad Then
+                firstLoad = False
+                Me.DocumentTextBox.Text = Value
+                Me.DocumentChanged = False
+            End If
+
         End Set
     End Property
     ''' <summary>
@@ -98,7 +104,7 @@ Public Class TabPageTemplate : Inherits TabPage
         ''suspend layout to avoid flicker while adding controls
         Me.SuspendLayout()
         ''initialize the tabs file path data
-        Me.FileName = UNSAVED_FILE
+        Me.FileName = UnsavedFileText
         ''initialize the text box
         Me.DocumentTextBox.Name = "DocumentTextBox"
         Me.DocumentTextBox.Text = String.Empty
@@ -161,8 +167,10 @@ Public Class TabPageTemplate : Inherits TabPage
     ''' <param name="other"></param>
     Friend Sub New(other As TabPageTemplate)
         Me.New()
-        Me.FileName = UNSAVED_FILE
+        Me.FileName = UnsavedFileText
         Me.FileContents = other.FileContents
+        Me.StatusBar.tssSentanceCount.Text = Me.SentanceCount.ToString
+        Me.StatusBar.tssWordCount.Text = Me.WordCount.ToString
     End Sub
     ''' <summary>
     ''' Dispose of the text box and status bar controls when the tab page is disposed.
@@ -275,7 +283,7 @@ Public Class TabPageTemplate : Inherits TabPage
         Dim sfd As New SaveFileDialog
         Try
             ''if the file has not been saved before, prompt to save as
-            If Me.FileName = TabPageTemplate.UNSAVED_FILE Then
+            If Me.FileName = UnsavedFileText Then
                 sfd.Title = "Save As New Document"
                 sfd.InitialDirectory = SpecialDirectories.MyDocuments
                 sfd.Filter = "Text Files (*.txt)|*.txt | All Files (*.*)|*.*"

@@ -139,4 +139,7 @@
   <data name="ProgramDescription" xml:space="preserve">
     <value>This program is a simple text editor. It is a demonstration of how to use the OpenFileDialog and SaveFileDialog controls to open and save text files. It also demonstrates how to use the common textbox control to display and edit text files.</value>
   </data>
+  <data name="UnsavedFileText" xml:space="preserve">
+    <value>Unsaved File</value>
+  </data>
 </root>

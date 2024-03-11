@@ -1,9 +1,7 @@
-﻿Imports System.IO
-Imports Microsoft.VisualBasic.FileIO
-''' <summary>
+﻿''' <summary>
 ''' This module contains code shared by all forms in the application.
 ''' </summary>
-''' <remarks>Aulthor: Christopher Vaughn</remarks>
+''' <remarks>Author: Christopher Vaughn</remarks>
 Module ModMain
 #Region "Type Definitions"
     ''' <summary>
@@ -60,6 +58,6 @@ Module ModMain
     End Class
 #End Region
 #Region "Global Variables"
-
+    Public UnsavedFileText As String = My.Resources.UnsavedFileText
 #End Region
 End Module
