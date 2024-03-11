@@ -37,7 +37,7 @@ Partial Class MyStatus
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Dock = System.Windows.Forms.DockStyle.None
+        Me.StatusStrip1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(32, 32)
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1, Me.tssFontFace, Me.tssFontSize, Me.ToolStripStatusLabel2, Me.tssWordWrap, Me.ToolStripStatusLabel3, Me.tssWordCount, Me.ToolStripStatusLabel7, Me.tssSentanceCount})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 0)

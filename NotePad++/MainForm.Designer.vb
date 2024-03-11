@@ -43,6 +43,7 @@ Partial Class MainForm
         Me.PrintToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.PrintPreviewToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.EditToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.UndoToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -63,7 +64,6 @@ Partial Class MainForm
         Me.SearchToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.toolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
         Me.AboutToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripContainer1.ContentPanel.SuspendLayout()
         Me.ToolStripContainer1.TopToolStripPanel.SuspendLayout()
         Me.ToolStripContainer1.SuspendLayout()
@@ -109,6 +109,9 @@ Partial Class MainForm
         'PrintDialog1
         '
         Me.PrintDialog1.UseEXDialog = True
+        '
+        'PrintDocument1
+        '
         '
         'ToolStripContainer1
         '
@@ -234,6 +237,14 @@ Partial Class MainForm
         Me.toolStripSeparator2.Name = "toolStripSeparator2"
         Me.toolStripSeparator2.Size = New System.Drawing.Size(363, 6)
         '
+        'CloseToolStripMenuItem
+        '
+        Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
+        Me.CloseToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.L), System.Windows.Forms.Keys)
+        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(366, 44)
+        Me.CloseToolStripMenuItem.Text = "C&lose"
+        Me.CloseToolStripMenuItem.ToolTipText = "Close the current tab"
+        '
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
@@ -251,20 +262,20 @@ Partial Class MainForm
         '
         Me.UndoToolStripMenuItem.Name = "UndoToolStripMenuItem"
         Me.UndoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.UndoToolStripMenuItem.Size = New System.Drawing.Size(426, 44)
+        Me.UndoToolStripMenuItem.Size = New System.Drawing.Size(375, 44)
         Me.UndoToolStripMenuItem.Text = "&Undo"
         '
         'RedoToolStripMenuItem
         '
         Me.RedoToolStripMenuItem.Name = "RedoToolStripMenuItem"
         Me.RedoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Y), System.Windows.Forms.Keys)
-        Me.RedoToolStripMenuItem.Size = New System.Drawing.Size(426, 44)
+        Me.RedoToolStripMenuItem.Size = New System.Drawing.Size(375, 44)
         Me.RedoToolStripMenuItem.Text = "&Redo"
         '
         'toolStripSeparator3
         '
         Me.toolStripSeparator3.Name = "toolStripSeparator3"
-        Me.toolStripSeparator3.Size = New System.Drawing.Size(423, 6)
+        Me.toolStripSeparator3.Size = New System.Drawing.Size(372, 6)
         '
         'CutToolStripMenuItem
         '
@@ -272,7 +283,7 @@ Partial Class MainForm
         Me.CutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.CutToolStripMenuItem.Name = "CutToolStripMenuItem"
         Me.CutToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.X), System.Windows.Forms.Keys)
-        Me.CutToolStripMenuItem.Size = New System.Drawing.Size(426, 44)
+        Me.CutToolStripMenuItem.Size = New System.Drawing.Size(375, 44)
         Me.CutToolStripMenuItem.Text = "Cu&t"
         '
         'CopyToolStripMenuItem
@@ -281,7 +292,7 @@ Partial Class MainForm
         Me.CopyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.CopyToolStripMenuItem.Name = "CopyToolStripMenuItem"
         Me.CopyToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
-        Me.CopyToolStripMenuItem.Size = New System.Drawing.Size(426, 44)
+        Me.CopyToolStripMenuItem.Size = New System.Drawing.Size(375, 44)
         Me.CopyToolStripMenuItem.Text = "&Copy"
         '
         'PasteToolStripMenuItem
@@ -290,27 +301,27 @@ Partial Class MainForm
         Me.PasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.PasteToolStripMenuItem.Name = "PasteToolStripMenuItem"
         Me.PasteToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.V), System.Windows.Forms.Keys)
-        Me.PasteToolStripMenuItem.Size = New System.Drawing.Size(426, 44)
+        Me.PasteToolStripMenuItem.Size = New System.Drawing.Size(375, 44)
         Me.PasteToolStripMenuItem.Text = "&Paste"
         '
         'toolStripSeparator4
         '
         Me.toolStripSeparator4.Name = "toolStripSeparator4"
-        Me.toolStripSeparator4.Size = New System.Drawing.Size(423, 6)
+        Me.toolStripSeparator4.Size = New System.Drawing.Size(372, 6)
         '
         'SelectAllToolStripMenuItem
         '
         Me.SelectAllToolStripMenuItem.Name = "SelectAllToolStripMenuItem"
         Me.SelectAllToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.A), System.Windows.Forms.Keys)
-        Me.SelectAllToolStripMenuItem.Size = New System.Drawing.Size(426, 44)
+        Me.SelectAllToolStripMenuItem.Size = New System.Drawing.Size(375, 44)
         Me.SelectAllToolStripMenuItem.Text = "Select &All"
         '
         'DuplicateWindowToolStripMenuItem
         '
         Me.DuplicateWindowToolStripMenuItem.Name = "DuplicateWindowToolStripMenuItem"
         Me.DuplicateWindowToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.D), System.Windows.Forms.Keys)
-        Me.DuplicateWindowToolStripMenuItem.Size = New System.Drawing.Size(426, 44)
-        Me.DuplicateWindowToolStripMenuItem.Text = "&Duplicate Window"
+        Me.DuplicateWindowToolStripMenuItem.Size = New System.Drawing.Size(375, 44)
+        Me.DuplicateWindowToolStripMenuItem.Text = "&Duplicate Tab"
         '
         'SettingsToolStripMenuItem
         '
@@ -374,14 +385,6 @@ Partial Class MainForm
         Me.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
         Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(243, 44)
         Me.AboutToolStripMenuItem.Text = "&About..."
-        '
-        'CloseToolStripMenuItem
-        '
-        Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
-        Me.CloseToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.L), System.Windows.Forms.Keys)
-        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(366, 44)
-        Me.CloseToolStripMenuItem.Text = "C&lose"
-        Me.CloseToolStripMenuItem.ToolTipText = "Close the current tab"
         '
         'MainForm
         '
