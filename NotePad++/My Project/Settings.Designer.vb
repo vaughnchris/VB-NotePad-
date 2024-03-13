@@ -64,6 +64,42 @@ Namespace My
                 Me("RecentFiles") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0, 0")>  _
+        Public Property StartLocation() As Global.System.Drawing.Point
+            Get
+                Return CType(Me("StartLocation"),Global.System.Drawing.Point)
+            End Get
+            Set
+                Me("StartLocation") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("800, 600")>  _
+        Public Property StartSize() As Global.System.Drawing.Size
+            Get
+                Return CType(Me("StartSize"),Global.System.Drawing.Size)
+            End Get
+            Set
+                Me("StartSize") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Normal")>  _
+        Public Property StartWindowState() As Global.System.Windows.Forms.FormWindowState
+            Get
+                Return CType(Me("StartWindowState"),Global.System.Windows.Forms.FormWindowState)
+            End Get
+            Set
+                Me("StartWindowState") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

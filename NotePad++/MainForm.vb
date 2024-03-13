@@ -1,4 +1,5 @@
-﻿Imports System.Drawing.Printing
+﻿Imports System.ComponentModel
+Imports System.Drawing.Printing
 Imports System.IO
 
 Public Class MainForm
@@ -63,9 +64,13 @@ Public Class MainForm
             ''if the file has no contents, disable the print menu items
             If Me.CurrentTab.FileContents = "" Then
                 PrintPreviewToolStripMenuItem.Enabled = False
+                PrintToolStripMenuItem.Enabled = False
             Else
                 PrintPreviewToolStripMenuItem.Enabled = True
+                PrintToolStripMenuItem.Enabled = True
             End If
+            ''enable the close menu item
+            CloseToolStripMenuItem.Enabled = True
         Else
             ''if there are no tabs open
             SaveToolStripMenuItem.Enabled = False
@@ -76,21 +81,11 @@ Public Class MainForm
             NewToolStripMenuItem.Enabled = True
             OpenToolStripMenuItem.Enabled = True
         End If
-        ''if there are no recent files, disable the recent files menu
-        If My.Settings.RecentFiles Is Nothing OrElse My.Settings.RecentFiles.Count = 0 Then
-            OpenRecentToolStripMenuItem.Enabled = False
-        Else
-            ''if there are recent files, enable the menu and populate it
+        If My.Settings.RecentFiles IsNot Nothing AndAlso
+                My.Settings.RecentFiles.Count > 0 Then
             OpenRecentToolStripMenuItem.Enabled = True
-            OpenRecentToolStripMenuItem.DropDownItems.Clear()
-            For Each file As String In My.Settings.RecentFiles
-                Using newMenuItem As New ToolStripMenuItem
-                    newMenuItem.Text = file.Substring(file.LastIndexOf("\") + 1)
-                    newMenuItem.Tag = file
-                    AddHandler newMenuItem.Click, AddressOf OpenRecentFile
-                    OpenRecentToolStripMenuItem.DropDownItems.Add(newMenuItem)
-                End Using
-            Next
+        Else
+            OpenRecentToolStripMenuItem.Enabled = False
         End If
     End Sub
     ''' <summary>
@@ -154,9 +149,26 @@ Public Class MainForm
     ''' <param name="e">Event Args</param>
     Private Sub SaveToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SaveToolStripMenuItem.Click
         If Me.CurrentTab.SaveFile() Then
+            UpdateRecentPaths()
             Me.Text = $"{My.Resources.MainFormTitle} - {Me.CurrentTab.FileName}"
         End If
     End Sub
+
+    Private Sub UpdateRecentPaths()
+        If My.Settings.RecentFiles Is Nothing Then
+            My.Settings.RecentFiles = New Specialized.StringCollection
+        End If
+        With My.Settings.RecentFiles
+            If Not .Contains(CurrentTab.FileName) Then
+                .Insert(0, CurrentTab.FileName)
+                If .Count > 10 Then
+                    .RemoveAt(.Count - 1)
+                End If
+            End If
+        End With
+        My.Settings.Save()
+    End Sub
+
     ''' <summary>
     ''' Save a copy of the current tab's file contents to a new file
     ''' and create a new tab with the new file data.
@@ -169,6 +181,7 @@ Public Class MainForm
             TabPageTemplate(Me.CurrentTab)
         ''if the file is saved successfully, add the tab to the tab control
         If tabCopy.SaveFileAs Then
+            Me.UpdateRecentPaths()
             Me.DocumentTabs.TabPages.Add(tabCopy)
         Else
             ''if the file is not saved successfully, dispose of the tab
@@ -394,8 +407,14 @@ Public Class MainForm
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        With My.Settings
+            Me.Location = .StartLocation
+            Me.WindowState = .StartWindowState
+            Me.Size = .StartSize
+        End With
         Dim SplashForm As New Splash
         SplashForm.ShowDialog()
+
     End Sub
 
     Private Sub FontFaceToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FontFaceToolStripMenuItem.Click
@@ -405,6 +424,33 @@ Public Class MainForm
             If dlgFont.ShowDialog() = DialogResult.OK Then
                 CurrentTab.DocumentTextBox.Font = dlgFont.Font
             End If
+        End If
+    End Sub
+
+    Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        With My.Settings
+            .StartLocation = Me.Location
+            .StartWindowState = Me.WindowState
+            .StartSize = Me.Size
+            .Save()
+        End With
+    End Sub
+
+    Private Sub OpenRecentToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles OpenRecentToolStripMenuItem.DropDownOpening
+        If My.Settings.RecentFiles IsNot Nothing AndAlso
+                My.Settings.RecentFiles.Count > 0 Then
+            OpenRecentToolStripMenuItem.DropDownItems.Clear()
+            For Each file As String In My.Settings.RecentFiles
+                Dim item As New ToolStripMenuItem
+                item.Text = Path.GetFileName(file)
+                item.Tag = file
+                If CurrentTab IsNot Nothing AndAlso
+                    item.Tag.ToString = CurrentTab.FileName Then
+                    item.Enabled = False
+                End If
+                AddHandler item.Click, AddressOf OpenRecentFile
+                OpenRecentToolStripMenuItem.DropDownItems.Add(item)
+            Next
         End If
     End Sub
 #End Region
