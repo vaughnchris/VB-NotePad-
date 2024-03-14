@@ -5,7 +5,34 @@ Imports System.IO
 Public Class MainForm
     Private Property CurrentTab As TabPageTemplate
 #Region "Form Control Events"
+    ''' <summary>
+    ''' Load the form and set the form's location, size, and window state to the last saved settings.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        With My.Settings
+            Me.Location = .StartLocation
+            Me.WindowState = .StartWindowState
+            Me.Size = .StartSize
+        End With
+        Dim SplashForm As New Splash
+        SplashForm.ShowDialog()
 
+    End Sub
+    ''' <summary>
+    ''' Store the form's location, size, and window state to the settings when the form is closing.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        With My.Settings
+            .StartLocation = Me.Location
+            .StartWindowState = Me.WindowState
+            .StartSize = Me.Size
+            .Save()
+        End With
+    End Sub
     ''' <summary>
     ''' Sets the new tabs autowrap property to synch with the menu item 
     ''' and sets the current tab to the new tab and set focus to the new tab's text box.
@@ -35,7 +62,10 @@ Public Class MainForm
     Private Sub DocumentTabs_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DocumentTabs.SelectedIndexChanged
         ''set the current tab to the selected tab
         Me.CurrentTab = CType(DocumentTabs.SelectedTab, TabPageTemplate)
-        Me.Text = $"{My.Resources.MainFormTitle} - {CurrentTab.FileName}"
+        If Me.CurrentTab IsNot Nothing Then
+            Me.Text = $"{My.Resources.MainFormTitle} - {CurrentTab.FileName}"
+        End If
+
     End Sub
 #End Region
 #Region "Form Menu Events"
@@ -83,10 +113,30 @@ Public Class MainForm
         End If
         If My.Settings.RecentFiles IsNot Nothing AndAlso
                 My.Settings.RecentFiles.Count > 0 Then
+            OpenRecentToolStripMenuItem.DropDownItems.Clear()
+            For Each file As String In My.Settings.RecentFiles
+                Dim item As New ToolStripMenuItem
+                item.Text = Path.GetFileName(file)
+                item.Tag = file
+                If CurrentTab IsNot Nothing AndAlso
+                    item.Tag.ToString = CurrentTab.FileName Then
+                    item.Enabled = False
+                End If
+                AddHandler item.Click, AddressOf OpenRecentFile
+                OpenRecentToolStripMenuItem.DropDownItems.Add(item)
+            Next
             OpenRecentToolStripMenuItem.Enabled = True
         Else
             OpenRecentToolStripMenuItem.Enabled = False
         End If
+    End Sub
+    ''' <summary>
+    ''' Removes the recent files list when the file menu is closed.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub FileToolStripMenuItem_DropDownClosed(sender As Object, e As EventArgs) Handles FileToolStripMenuItem.DropDownClosed
+        OpenRecentToolStripMenuItem.DropDownItems.Clear()
     End Sub
     ''' <summary>
     ''' Creates a new tab and adds it to the tab control. with no file contents.
@@ -132,10 +182,9 @@ Public Class MainForm
             newTab.FileContents = File.ReadAllText(selectedPath)
             ''add the tab to the tab control
             Me.DocumentTabs.TabPages.Add(newTab)
+            Me.CurrentTab = newTab
         Else
             ''if the file does not exist, remove it from the recent files list
-            MessageBox.Show($"The file {selectedPath} does not exist, or has been moved.",
-                            "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error)
             My.Settings.RecentFiles.Remove(selectedPath)
             ''save the settings
             My.Settings.Save()
@@ -153,7 +202,9 @@ Public Class MainForm
             Me.Text = $"{My.Resources.MainFormTitle} - {Me.CurrentTab.FileName}"
         End If
     End Sub
-
+    ''' <summary>
+    ''' Updates the recent files list with the current tab's file path.
+    ''' </summary>
     Private Sub UpdateRecentPaths()
         If My.Settings.RecentFiles Is Nothing Then
             My.Settings.RecentFiles = New Specialized.StringCollection
@@ -168,7 +219,6 @@ Public Class MainForm
         End With
         My.Settings.Save()
     End Sub
-
     ''' <summary>
     ''' Save a copy of the current tab's file contents to a new file
     ''' and create a new tab with the new file data.
@@ -195,29 +245,30 @@ Public Class MainForm
     ''' <param name="sender">The Selected MenuItem</param>
     ''' <param name="e">Event Args</param>
     Private Sub CloseToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CloseToolStripMenuItem.Click
-        ''if the document has been changed, prompt to save
-        If CurrentTab.DocumentChanged Then
-            Dim result As DialogResult = MessageBox.Show("Do you want to save changes to " & CurrentTab.FileName & "?",
-                                                         "Save Changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
-            ''if the user wants to save the file, save it
-            If result = DialogResult.Yes Then
-                ''save the file
-                CurrentTab.SaveFile()
-                ''remove the tab from the tab control
+        ''if the current tab is not nothing
+        If CurrentTab IsNot Nothing Then
+            ''if the document has been changed, prompt to save
+            If CurrentTab.DocumentChanged Then
+                Dim result As DialogResult = MessageBox.Show("Do you want to save changes to " & CurrentTab.FileName & "?",
+                                                             "Save Changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+                ''if the user wants to save the file, save it
+                If result = DialogResult.Yes Then
+                    ''save the file
+                    CurrentTab.SaveFile()
+                    ''remove the tab from the tab control
+                    Me.DocumentTabs.TabPages.Remove(CurrentTab)
+                    ''dispose of the tab
+                    CurrentTab.Dispose()
+                    ''if the user does not want to save the file, remove the tab from the tab control
+                ElseIf result = DialogResult.Cancel Then
+                    ''do nothing
+                    Return
+                End If
+                ''if the document has not been changed since last save,
+                '', remove the tab from the tab control
+            Else
                 Me.DocumentTabs.TabPages.Remove(CurrentTab)
-                ''dispose of the tab
-                CurrentTab.Dispose()
-                ''if the user does not want to save the file, remove the tab from the tab control
-            ElseIf result = DialogResult.Cancel Then
-                ''do nothing
-                Return
             End If
-            ''if the document has not been changed since last save,
-            '', remove the tab from the tab control
-        Else
-            Me.DocumentTabs.TabPages.Remove(CurrentTab)
-            ''dispose of the tab
-            CurrentTab.Dispose()
         End If
     End Sub
     ''' <summary>
@@ -296,6 +347,11 @@ Public Class MainForm
 #End Region
 #End Region
 #Region "Edit Menu Events"
+    ''' <summary>
+    ''' Sets the edit menu items to be enabled or disabled based on the current tab's state.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub EditToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles EditToolStripMenuItem.DropDownOpening
         If CurrentTab IsNot Nothing Then
             UndoToolStripMenuItem.Enabled = CurrentTab.DocumentTextBox.CanUndo
@@ -312,7 +368,11 @@ Public Class MainForm
             Else
                 PasteToolStripMenuItem.Enabled = False
             End If
-            Me.DuplicateWindowToolStripMenuItem.Enabled = True
+            If CurrentTab.FileContents.Length > 0 Then
+                Me.DuplicateWindowToolStripMenuItem.Enabled = True
+            Else
+                Me.DuplicateWindowToolStripMenuItem.Enabled = False
+            End If
         Else
             UndoToolStripMenuItem.Enabled = False
             RedoToolStripMenuItem.Enabled = False
@@ -324,16 +384,24 @@ Public Class MainForm
         End If
 
     End Sub
+    ''' <summary>
+    ''' Undoes the last action in the current tab's text box.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub UndoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles UndoToolStripMenuItem.Click
         If CurrentTab.DocumentTextBox.CanUndo Then
             CurrentTab.DocumentTextBox.Undo()
         End If
     End Sub
-
+    ''' <summary>
+    ''' Redoes the last action in the current tab's text box.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub RedoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RedoToolStripMenuItem.Click
 
     End Sub
-
     ''' <summary>
     ''' Copy the selected text to the clipboard from 
     ''' the current tab's text box.
@@ -365,7 +433,7 @@ Public Class MainForm
         CurrentTab.DocumentTextBox.Paste()
     End Sub
     ''' <summary>
-    ''' Duplicate the current tab and add it to the tab control.
+    ''' Select all the text in the current tab's text box.
     ''' </summary>
     ''' <param name="sender">The Selected MenuItem</param>
     ''' <param name="e">Event Args</param>
@@ -373,13 +441,47 @@ Public Class MainForm
         ''copy everything from the textbox to the clipboard
         CurrentTab.DocumentTextBox.SelectAll()
     End Sub
+    ''' <summary>
+    ''' Duplicate the current tab and contents, and add it to the tab control.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub DuplicateWindowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DuplicateWindowToolStripMenuItem.Click
         ''create a new tab from the current tab using the copy constructor and add it to the tab control
         Dim tabCopy As New TabPageTemplate(Me.CurrentTab)
         Me.DocumentTabs.TabPages.Add(tabCopy)
     End Sub
+
 #End Region
 #Region "Settings Menu Events"
+    ''' <summary>
+    ''' Sets the settings menu items to be enabled or disabled based on the current tab's state.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub SettingsToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles SettingsToolStripMenuItem.DropDownOpening
+        If Me.CurrentTab Is Nothing Then
+            Me.FontFaceToolStripMenuItem.Enabled = False
+            Me.AutoWrapTextToolStripMenuItem.Enabled = False
+        Else
+            Me.FontFaceToolStripMenuItem.Enabled = True
+            Me.AutoWrapTextToolStripMenuItem.Enabled = True
+        End If
+    End Sub
+    ''' <summary>
+    ''' Changes the font of the current tab's text box.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub FontFaceToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FontFaceToolStripMenuItem.Click
+        If CurrentTab IsNot Nothing Then
+            Dim dlgFont As New FontDialog
+            dlgFont.Font = CurrentTab.DocumentTextBox.Font
+            If dlgFont.ShowDialog() = DialogResult.OK Then
+                CurrentTab.DocumentTextBox.Font = dlgFont.Font
+            End If
+        End If
+    End Sub
     ''' <summary>
     ''' Toggles the word wrap property of the current tab's text box.
     ''' </summary>
@@ -400,60 +502,16 @@ Public Class MainForm
     End Sub
 #End Region
 #Region "Help Menu Events"
+    ''' <summary>
+    ''' Displays the about form.
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
         Dim frmAbout As New AboutForm
         frmAbout.ShowDialog()
 
     End Sub
-
-    Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        With My.Settings
-            Me.Location = .StartLocation
-            Me.WindowState = .StartWindowState
-            Me.Size = .StartSize
-        End With
-        Dim SplashForm As New Splash
-        SplashForm.ShowDialog()
-
-    End Sub
-
-    Private Sub FontFaceToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FontFaceToolStripMenuItem.Click
-        If CurrentTab IsNot Nothing Then
-            Dim dlgFont As New FontDialog
-            dlgFont.Font = CurrentTab.DocumentTextBox.Font
-            If dlgFont.ShowDialog() = DialogResult.OK Then
-                CurrentTab.DocumentTextBox.Font = dlgFont.Font
-            End If
-        End If
-    End Sub
-
-    Private Sub MainForm_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        With My.Settings
-            .StartLocation = Me.Location
-            .StartWindowState = Me.WindowState
-            .StartSize = Me.Size
-            .Save()
-        End With
-    End Sub
-
-    Private Sub OpenRecentToolStripMenuItem_DropDownOpening(sender As Object, e As EventArgs) Handles OpenRecentToolStripMenuItem.DropDownOpening
-        If My.Settings.RecentFiles IsNot Nothing AndAlso
-                My.Settings.RecentFiles.Count > 0 Then
-            OpenRecentToolStripMenuItem.DropDownItems.Clear()
-            For Each file As String In My.Settings.RecentFiles
-                Dim item As New ToolStripMenuItem
-                item.Text = Path.GetFileName(file)
-                item.Tag = file
-                If CurrentTab IsNot Nothing AndAlso
-                    item.Tag.ToString = CurrentTab.FileName Then
-                    item.Enabled = False
-                End If
-                AddHandler item.Click, AddressOf OpenRecentFile
-                OpenRecentToolStripMenuItem.DropDownItems.Add(item)
-            Next
-        End If
-    End Sub
 #End Region
 #End Region
-
 End Class
